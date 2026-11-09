@@ -16,15 +16,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      UPPC_APP_URL: ${{ vars.UPPC_APP_URL }}
+      UPPC_APP_URL: ${{ secrets.UPPC_APP_URL }}
       UPPC_INGEST_TOKEN: ${{ secrets.UPPC_INGEST_TOKEN }}
       UPPC_VAPID_PRIVATE: ${{ secrets.UPPC_VAPID_PRIVATE }}
-      UPPC_VAPID_SUBJECT: ${{ vars.UPPC_APP_URL }}
+      UPPC_VAPID_SUBJECT: ${{ secrets.UPPC_APP_URL }}
       UPPC_SOURCE_INTERVAL: '900'
       UPPC_FULL_REFRESH: ${{ inputs.full }}
       UPPC_CACHE_KEY: ${{ secrets.UPPC_CACHE_KEY }}
       PYTHONUNBUFFERED: '1'
     steps:
+      - name: Ocultar el dominio del aplicativo en los registros
+        run: |
+          python3 - <<'PY'
+          import os
+          from urllib.parse import urlsplit
+          host = urlsplit(os.environ['UPPC_APP_URL']).hostname
+          if not host:
+              raise SystemExit('Falta configurar la dirección del aplicativo.')
+          print('::add-mask::' + host)
+          PY
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: ${{ secrets.UPPC_COLLECTOR_REPO }}
