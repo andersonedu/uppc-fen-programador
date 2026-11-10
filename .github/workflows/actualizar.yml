@@ -6,6 +6,10 @@ on:
         type: boolean
         default: false
         description: Consultar también todas las fuentes directas
+      ciam:
+        type: boolean
+        default: false
+        description: Comprobar si cambió el directorio
 permissions:
   contents: read
 concurrency:
@@ -22,6 +26,7 @@ jobs:
       UPPC_VAPID_SUBJECT: ${{ secrets.UPPC_APP_URL }}
       UPPC_SOURCE_INTERVAL: '900'
       UPPC_FULL_REFRESH: ${{ inputs.full }}
+      UPPC_SYNC_CIAM: ${{ inputs.ciam }}
       UPPC_CACHE_KEY: ${{ secrets.UPPC_CACHE_KEY }}
       PYTHONUNBUFFERED: '1'
     steps:
